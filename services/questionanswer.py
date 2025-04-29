@@ -1,7 +1,7 @@
 from fastapi import File, UploadFile, Form
 import requests
 
-API_TOKEN = "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"
+API_TOKEN = ""
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
 API_URL = "https://api-inference.huggingface.co/models/deepset/roberta-base-squad2"
 
