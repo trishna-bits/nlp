@@ -1,0 +1,48 @@
+<html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Translate App</title>
+            <link href="../css/main.css?css_version={{css_version}}" rel="stylesheet" />
+            <script>
+                async function translateText(language) {
+                    const text = document.getElementById('text').value;
+
+                    const formData = new FormData();
+                    formData.append('text', text);
+                    formData.append('target_language', language);
+
+                    const response = await fetch('/translate/', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    
+                    const resultDiv = document.getElementById('result');
+                    if (result.translated_text) {
+                        resultDiv.innerText = result.translated_text;
+                    } else {
+                        resultDiv.innerText = 'Error: ' + result.error;
+                    }
+                }
+            </script>
+        </head>
+        <body>
+            <button class="tablink active">Translate</button>
+            <form action="/answer" method="get">
+                <button type="submit" class="tablink">Question & Answer</button>
+            </form>
+            <form action="/analyze-sentiment" method="get">
+                <button type="submit" class="tablink">Sentiment Analysis</button>
+            </form>
+            <div class="tabcontent">
+                <textarea class="border" id="text" placeholder="Enter text to translate..." required></textarea><br>
+                <div style="text-align: center;">
+                    <button class="btn" type="button" onclick="translateText('fr')">French</button>
+                    <button class="btn" type="button" onclick="translateText('de')">German</button>
+                    <button class="btn" type="button" onclick="translateText('es')">Spanish</button>
+                    <button class="btn" type="button" onclick="translateText('hi')">Hindi</button>
+                </div>
+                <div id="result"></div>
+            </div>
+        </body>
+    </html>

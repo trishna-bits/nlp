@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Answering</title>
+    <style>
+        label { margin-top: 10px; display: block; }
+        #result { margin-top: 20px; font-weight: bold; color: #333; }
+    </style>
+    <link href="../css/main.css?css_version={{css_version}}" rel="stylesheet" />
+</head>
+<body>
+    <form action="/translate" method="get">
+        <button class="tablink">Translate</button>
+    </form>
+    <button class="tablink active">Question & Answer</button>
+    <form action="/analyze-sentiment" method="get">
+        <button type="submit" class="tablink">Sentiment Analysis</button>
+    </form>
+    <div class="tabcontent">
+        <form id="qaForm" style="margin: 5% 1%; text-align: center;">
+            <input type="text" class="border" id="question" name="question" placeholder="Enter your question" required>
+            <br/><br/>
+            <input type="file" id="file" class="border" name="file" placeholder="Upload a document" accept=".txt" required>
+            <br/><br/>
+            <button class="btn" type="submit">Get Answer</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+    
+
+    <script>
+        document.getElementById("qaForm").addEventListener("submit", async function(event) {
+            event.preventDefault();  
+
+            const question = document.getElementById("question").value;
+            const fileInput = document.getElementById("file");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please upload a document.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("question", question);
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("/answer", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById("result").innerText = "Answer: " + (result.answer || "No answer found");
+                } else {
+                    const error = await response.json();
+                    document.getElementById("result").innerText = "Error: " + (error.details || "Unable to get an answer");
+                }
+            } catch (error) {
+                document.getElementById("result").innerText = "Error: " + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

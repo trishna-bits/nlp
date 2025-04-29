@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <link href="../css/main.css?css_version={{css_version}}" rel="stylesheet" />
+</head>
+<body>
+    <form action="/translate" method="get">
+        <button class="tablink">Translate</button>
+    </form>
+    <form action="/answer" method="get">
+        <button type="submit" class="tablink">Question & Answer</button>
+    </form>
+    <button class="tablink active">Sentiment Analysis</button>
+    <div class="tabcontent">
+        <form id="sentimentForm" style="text-align: center;">
+            <textarea class="border" id="text" name="text" rows="4" cols="50" required placeholder="What's in your mind?"></textarea><br><br>
+            <button class="btn" type="submit">Analyze</button>
+        </form>
+        
+        <div id="result" style="display: none; margin-top: 20px;">
+            <p style="display: none;"><strong>Sentiment:</strong> <span id="sentimentLabel"></span></p>
+            <p style="display: none;"><strong>Confidence Score:</strong> <span id="confidenceScore"></span></p>
+            <p style="font-size: 5em; text-align:center;" id="emoji"></p>
+        </div>
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById("sentimentForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent form from refreshing the page
+            
+            // Get the text from the textarea
+            const text = document.getElementById("text").value;
+            
+            // Send a POST request to the sentiment analysis endpoint
+            const response = await fetch("/analyze-sentiment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Display the result
+                document.getElementById("sentimentLabel").textContent = data.label;
+                document.getElementById("confidenceScore").textContent = data.score;
+                document.getElementById("emoji").textContent = data.emoji;
+                
+                // Show the result section
+                document.getElementById("result").style.display = "block";
+            } else {
+                alert("Sentiment analysis failed. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>
